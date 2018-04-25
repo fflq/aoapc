@@ -1,0 +1,55 @@
+/*
+* title: uva 679 - 
+* author: flq[flqnerve@163.com] - Wed Apr 25 15:21:59 CST 2018
+* note: TLE
+*/
+
+#include <iostream>
+#include <cstring>
+
+using namespace std ;
+
+const int MAX_NODE_NUMS = (1<<20 +5) ;
+const int SWITCH_OFF = 0 ;
+int g_tree[MAX_NODE_NUMS] ;
+
+int dropping_ball(int depth)
+{
+	int id = 1, state ;
+	while (-- depth)
+	{
+		state = g_tree[id] ; 
+		g_tree[id] = 1 - g_tree[id] ; 
+
+		id = (SWITCH_OFF == state) ? id*2 : 2*id + 1 ;
+	}
+
+	return id ;
+}
+
+int main()
+{
+#ifdef LOCAL
+	freopen ("in.uva", "r", stdin) ;
+#endif
+
+	int num, depth, max_depth, ball_nums, id, node_nums ;
+	while (cin >> num && (-1 != num))
+	{
+		max_depth = 0 ;
+		while (num --)
+		{
+			cin >> depth >> ball_nums ;
+
+			node_nums = 1 << (depth-1) ;
+			for (int i = 0; i < node_nums; ++ i)	g_tree[i] = SWITCH_OFF ;
+
+			while (ball_nums --)	id = dropping_ball(depth) ;
+
+			cout << id << endl ;
+		}
+	}
+
+	return 0 ;
+}
+
