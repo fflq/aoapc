@@ -1,0 +1,101 @@
+/*
+ * uva 12657 - Boxes in a Line
+ * flq - Tue Apr 24 12:35:50 CST 2018
+ * note:
+ *	*1. stl-list TL
+ */
+
+#include <iostream>
+#include <list>
+
+using namespace std ;
+
+list<int> g_list ;
+list<int>::iterator *gp_iters[100000+5] = { NULL } ;
+
+void handle_list(const int opcode, const int op1, const int op2)
+{
+	static list<int>::iterator it1, it2 ;
+	if (4 != opcode)
+	{
+		it1 = *gp_iters[op1] ;
+		it2 = *gp_iters[op2] ;
+	}
+	switch (opcode)
+	{
+		case 1 :	// x -> left of y
+		{
+			*gp_iters[op1] = g_list.insert (it2, op1) ;
+			g_list.erase (it1) ;
+			break ;
+		}
+		case 2 :	// x -> right of y
+		{
+			if (it2 == g_list.end())	g_list.push_back(op1) ;
+			else	*gp_iters[op1] = g_list.insert (++it2, op1) ;
+			g_list.erase (it1) ;
+			break ;
+		}
+		case 3 :
+		{
+			int temp = *it1 ;
+			*it1 = *it2 ;
+			*it2 = temp ;
+
+			list<int>::iterator temp_it = *gp_iters[op1] ;
+			*gp_iters[op1] = *gp_iters[op2] ;
+			*gp_iters[op2] = temp_it ;
+			break ;
+		}
+		case 4 :
+		{
+			g_list.reverse () ;
+			break ;
+		}
+	}
+}
+
+int main()
+{
+#ifdef LOCAL
+	freopen ("in.uva", "r", stdin) ;
+#endif
+
+	int n, m, opcode, op1, op2, case_num=1 ;
+	long score ;
+	string line ;
+	list<int>::iterator it ;
+	while (cin >> n >> m)
+	{
+		g_list.clear () ;
+		for (int i = 1; i <= n; ++ i)	
+		{
+			g_list.push_back(i) ;
+			it = g_list.end() ;
+			if (NULL == gp_iters[i])	gp_iters[i] = new list<int>::iterator() ;
+			*gp_iters[i] = (--it) ;
+		}
+		
+		while (m --)
+		{
+			cin >> opcode ;
+			if (4 != opcode)	cin >> op1 >> op2 ;
+
+			handle_list (opcode, op1, op2) ;
+
+#ifdef LOCAL
+			//for (auto num : g_list) cout << num << " " ;
+			//cout << endl ;
+#endif
+		}
+
+		score = 0 ;
+		n = 1 ;
+		for (auto num : g_list)	if(1 == (n++ % 2))	score += num ;
+		cout << "Case " << case_num++ << ": " << score << endl ;
+
+		//if (case_num>2)	break ;
+	}
+
+	return 0 ;
+}
