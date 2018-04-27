@@ -1,0 +1,89 @@
+/*
+* title: uva 122 - Trees on the level  
+* author: flq[flqnerve@163.com] - Thu Apr 26 14:10:36 CST 2018
+* note:
+*  *1. 不能用数组存完全树，题目说最多256个节点，不是指完全树
+*  若256是个单链，数组就需要2^256-1个节点
+*/
+
+#include <iostream>
+#include <cstring>
+
+using namespace std ;
+
+inline void get_n_s(string &str, int &n, string &s)
+{
+	size_t pos1 = str.find_first_of(',') ;
+	size_t pos2 = str.find_first_of(')') ;
+
+	string n_str = str.substr(1, pos1-1) ;
+	n = atoi(n_str.c_str()) ;
+
+	s = str.substr(pos1+1, pos2-pos1-1) ;
+}
+
+int get_tree_add_id(string &s)
+{
+	int id = 1 ;
+	for (char ch : s)
+	{
+		if ('L' == ch)	id *= 2 ;
+		else if ('R' == ch)	id = 2*id+1 ;
+	}
+	return id ;
+}
+
+int main()
+{
+#ifdef LOCAL
+	freopen ("in.uva", "r", stdin) ;
+#endif
+
+	const int tree_size = 260 ;
+	int id, is_not, node_nums, n, tree[tree_size] ;
+	string line, s ;
+	const string notcomp = "not complete" ;
+
+	memset (tree, 0, sizeof(tree)) ;
+	is_not = node_nums = 0 ;
+	while (cin >> line)
+	{
+		// 结束符号，输出结果
+		if ("()" == line)	
+		{
+			if (1 != is_not)
+			{
+				// 由于某点没有父节点，确定不满足
+				for (int i = node_nums; i > 1; -- i) 
+					if(0 == tree[i/2])	{ is_not = 1 ; break ; }
+			}
+
+			if (1 == is_not)	cout << notcomp << endl ;
+			else 
+			{
+				// 输出不为0的node_nums个点
+				for (int k = 1, i = 1; k <= node_nums; ++ i)
+					if (tree[i])	{ cout << tree[i] << " " ; ++ k ; }  
+				cout << endl ;
+			}
+
+			memset (tree, 0, sizeof(tree)) ;
+			is_not = node_nums = 0 ;
+			continue ;
+		}
+
+		// 由于重复，已经确定该例数据不满足了
+		if (1 == is_not)	continue ;
+
+		++ node_nums ;
+		get_n_s (line, n, s) ;
+		cout << n << " * " << s << endl ;
+		
+		id = get_tree_add_id(s) ;
+		if (0 != tree[id])	is_not = 1 ;
+		else	tree[id] = n ;
+	}
+
+	return 0 ;
+}
+

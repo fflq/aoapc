@@ -1,5 +1,5 @@
 /*
-* title: uva 679 - 
+* title: uva 679 - Dropping Balls
 * author: flq[flqnerve@163.com] - Wed Apr 25 15:21:59 CST 2018
 * note:
 *  *1. 模拟n球路径会超时，这里参考书上的面运算规律：
